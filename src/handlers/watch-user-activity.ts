@@ -54,9 +54,17 @@ export async function runRemindersForRepository(context: ContextPlugin, repo: Co
  * - locked
  * - not in "open" state
  * - not priced (no price label found)
+ * - no assigned user
  */
 function shouldIgnoreIssue(issue: IssueType) {
-  return issue.draft || !!issue.pull_request || issue.locked || issue.state !== "open" || parsePriceLabel(issue.labels) === null;
+  return (
+    issue.draft ||
+    !!issue.pull_request ||
+    issue.locked ||
+    issue.state !== "open" ||
+    parsePriceLabel(issue.labels) === null ||
+    !(issue.assignees?.length || issue.assignee)
+  );
 }
 
 async function updateReminders(context: ContextPlugin, repo: ContextPlugin["payload"]["repository"]) {
